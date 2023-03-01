@@ -23,7 +23,6 @@ public class SensorsController {
 
     private final SensorsService sensorsService;
 
-
     @Autowired
     public SensorsController(SensorsService sensorsService
     ) {
@@ -39,7 +38,7 @@ public class SensorsController {
     }
 
     @PostMapping("/registration")
-    public void registration(@RequestBody @Valid Sensor sensor, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> registration(@RequestBody @Valid Sensor sensor, BindingResult bindingResult) {
         boolean match = sensorsService.findAll().stream()
                 .anyMatch(sensor1 -> sensor1.getName().equals(sensor.getName()));
         if (bindingResult.hasErrors()) {
@@ -48,7 +47,7 @@ public class SensorsController {
             throw new SensorIsAlreadyRegistered();
         } else
             sensorsService.save(sensor);
-
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @ExceptionHandler

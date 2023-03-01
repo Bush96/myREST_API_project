@@ -3,7 +3,10 @@ package com.example.demo.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Measurement")
@@ -15,13 +18,14 @@ public class Measurement {
     private int id;
 
     @Column(name = "value")
-    @NotEmpty(message = "Value should not be empty")
     @Min(value = 0,message = "Value should be greater than 0")
     private int value;
 
     @Column(name = "raining")
-    @NotEmpty(message = "Column should not be empty")
     private boolean raining;
+
+    @Column(name = "created_ad")
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "sensor_id", referencedColumnName = "id")
@@ -29,6 +33,14 @@ public class Measurement {
 
     public Measurement() {
 
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public void setId(int id) {
@@ -63,11 +75,4 @@ public class Measurement {
         return owner;
     }
 
-
-//    public Measurement(int id, int value, boolean raining, Sensor owner) {
-//        this.id = id;
-//        this.value = value;
-//        this.raining = raining;
-//        this.owner = owner;
-//    }
 }
