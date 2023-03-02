@@ -28,7 +28,6 @@ public class MeasurementController {
 
     private final MeasurementsService measurementsService;
     private final SensorsService sensorsService;
-
     private final ModelMapper modelMapper;
 
 
@@ -52,25 +51,38 @@ public class MeasurementController {
     public ResponseEntity<HttpStatus> registration(@RequestBody @Valid MeasurementDTO measurementDTO, BindingResult bindingResult) {
         boolean match = sensorsService.findAll().stream()
                 .anyMatch(sensor1 -> sensor1.getName().equals(measurementDTO.getOwner().getName()));
-       if (!match) {
+        if (!match) {
             throw new MeasurementInvalidOwner();
 
         } else if (bindingResult.hasErrors()) {
-           StringBuilder errorMsg = new StringBuilder();
+            StringBuilder errorMsg = new StringBuilder();
 
-           List<FieldError> errors = bindingResult.getFieldErrors();
-           for (FieldError error : errors) {
-               errorMsg.append(error.getField())
-                       .append(" - ").
-                       append(error.getDefaultMessage())
-                       .append(";");
-           }
-           throw new IncorrectMeasurements(errorMsg.toString());
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").
+                        append(error.getDefaultMessage())
+                        .append(";");
+            }
+            throw new IncorrectMeasurements(errorMsg.toString());
 
 
-       } else
+        } else
             measurementsService.save(convertToMeasurement(measurementDTO));
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @GetMapping("/rainyDaysCount")
+    public int rainyDaysCount() {
+        int counter = 0;
+        List<Measurement> forCheck = measurementsService.findAll();
+        for (Measurement f : forCheck) {
+            if (f.isRaining()) {
+                counter++;
+            }
+        }
+
+        return counter;
     }
 
     @ExceptionHandler
