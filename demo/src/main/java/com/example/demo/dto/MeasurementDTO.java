@@ -2,11 +2,13 @@ package com.example.demo.dto;
 
 import com.example.demo.models.Sensor;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
 public class MeasurementDTO {
 
-    @Min(value = 0,message = "Value should be greater than 0")
+    @Min(value = -100,message = "Value should be between -100 and 100")
+    @Max(value = 100,message = "Value should be between -100 and 100")
     private int value;
     private boolean raining;
     private Sensor owner;

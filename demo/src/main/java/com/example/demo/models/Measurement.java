@@ -1,10 +1,7 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +15,8 @@ public class Measurement {
     private int id;
 
     @Column(name = "value")
-    @Min(value = 0,message = "Value should be greater than 0")
+    @Min(value = -100,message = "Value should be between -100 and 100")
+    @Max(value = 100,message = "Value should be between -100 and 100")
     private int value;
 
     @Column(name = "raining")

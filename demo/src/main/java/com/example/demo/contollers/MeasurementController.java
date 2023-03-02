@@ -6,14 +6,17 @@ import com.example.demo.models.Measurement;
 import com.example.demo.models.Sensor;
 import com.example.demo.servers.MeasurementsService;
 import com.example.demo.servers.SensorsService;
+import com.example.demo.util.IncorrectMeasurements;
 import com.example.demo.util.MeasurementInvalidOwner;
 import com.example.demo.util.SensorErrorResponse;
+import com.example.demo.util.SensorWasNotCreatedException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +54,21 @@ public class MeasurementController {
                 .anyMatch(sensor1 -> sensor1.getName().equals(measurementDTO.getOwner().getName()));
        if (!match) {
             throw new MeasurementInvalidOwner();
-        } else
+
+        } else if (bindingResult.hasErrors()) {
+           StringBuilder errorMsg = new StringBuilder();
+
+           List<FieldError> errors = bindingResult.getFieldErrors();
+           for (FieldError error : errors) {
+               errorMsg.append(error.getField())
+                       .append(" - ").
+                       append(error.getDefaultMessage())
+                       .append(";");
+           }
+           throw new IncorrectMeasurements(errorMsg.toString());
+
+
+       } else
             measurementsService.save(convertToMeasurement(measurementDTO));
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -60,6 +77,12 @@ public class MeasurementController {
     private ResponseEntity<SensorErrorResponse> handlerException(MeasurementInvalidOwner m) {
         SensorErrorResponse response = new SensorErrorResponse("This Owner was not registered", System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<SensorErrorResponse> handlerException(IncorrectMeasurements m) {
+        SensorErrorResponse response = new SensorErrorResponse("Incorrect measurements", System.currentTimeMillis());
+        return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
     }
 
     private Measurement convertToMeasurement(MeasurementDTO measurementDTO) {

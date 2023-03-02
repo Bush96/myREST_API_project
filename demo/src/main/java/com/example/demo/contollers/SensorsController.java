@@ -6,15 +6,16 @@ import com.example.demo.models.Sensor;
 import com.example.demo.servers.SensorsService;
 
 import com.example.demo.util.SensorErrorResponse;
-import com.example.demo.util.SensorInvalidName;
 import com.example.demo.util.SensorIsAlreadyRegistered;
 
+import com.example.demo.util.SensorWasNotCreatedException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,8 +51,19 @@ public class SensorsController {
     public ResponseEntity<HttpStatus> registration(@RequestBody @Valid SensorDTO sensorDTO, BindingResult bindingResult) {
         boolean match = sensorsService.findAll().stream()
                 .anyMatch(sensor1 -> sensor1.getName().equals(sensorDTO.getName()));
+
         if (bindingResult.hasErrors()) {
-            throw new SensorInvalidName();
+            StringBuilder errorMsg = new StringBuilder();
+
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").
+                        append(error.getDefaultMessage())
+                        .append(";");
+            }
+            throw new SensorWasNotCreatedException(errorMsg.toString());
+
         } else if (match) {
             throw new SensorIsAlreadyRegistered();
         } else
@@ -62,15 +74,20 @@ public class SensorsController {
 
     @ExceptionHandler
     private ResponseEntity<SensorErrorResponse> handlerException(SensorIsAlreadyRegistered s) {
-        SensorErrorResponse response = new SensorErrorResponse("This sensor name is already registered", System.currentTimeMillis());
+        SensorErrorResponse response = new SensorErrorResponse("This sensor name is already registered",
+                System.currentTimeMillis());
+
         return new ResponseEntity<>(response, HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     }
 
     @ExceptionHandler
-    private ResponseEntity<SensorErrorResponse> handlerException(SensorInvalidName s) {
-        SensorErrorResponse response = new SensorErrorResponse("Name should be between 3 and 30 characters", System.currentTimeMillis());
+    private ResponseEntity<SensorErrorResponse> handlerException(SensorWasNotCreatedException s) {
+        SensorErrorResponse response = new SensorErrorResponse("Sensor was not created",
+                System.currentTimeMillis());
+
         return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
     }
+
 
     private Sensor convertToSensor(SensorDTO sensorDTO) {
         return modelMapper.map(sensorDTO, Sensor.class);
