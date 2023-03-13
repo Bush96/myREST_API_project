@@ -5,6 +5,8 @@ import com.example.demo.models.Sensor;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
+import java.util.Map;
+
 public class MeasurementDTO {
 
     @Min(value = -100,message = "Value should be between -100 and 100")

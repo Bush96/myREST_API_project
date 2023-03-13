@@ -1,4 +1,4 @@
-package com.example.demo.servers;
+package com.example.demo.service;
 
 import com.example.demo.models.Sensor;
 import com.example.demo.repositories.SensorsRepository;

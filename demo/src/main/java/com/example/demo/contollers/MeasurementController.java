@@ -1,15 +1,12 @@
 package com.example.demo.contollers;
 
 import com.example.demo.dto.MeasurementDTO;
-import com.example.demo.dto.SensorDTO;
 import com.example.demo.models.Measurement;
-import com.example.demo.models.Sensor;
-import com.example.demo.servers.MeasurementsService;
-import com.example.demo.servers.SensorsService;
+import com.example.demo.service.MeasurementsService;
+import com.example.demo.service.SensorsService;
 import com.example.demo.util.IncorrectMeasurements;
 import com.example.demo.util.MeasurementInvalidOwner;
 import com.example.demo.util.SensorErrorResponse;
-import com.example.demo.util.SensorWasNotCreatedException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

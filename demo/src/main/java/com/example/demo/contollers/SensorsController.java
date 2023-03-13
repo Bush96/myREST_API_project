@@ -3,7 +3,7 @@ package com.example.demo.contollers;
 import com.example.demo.dto.SensorDTO;
 import com.example.demo.models.Sensor;
 
-import com.example.demo.servers.SensorsService;
+import com.example.demo.service.SensorsService;
 
 import com.example.demo.util.SensorErrorResponse;
 import com.example.demo.util.SensorIsAlreadyRegistered;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 public class SensorsController {
 
     private final SensorsService sensorsService;
-
     private final ModelMapper modelMapper;
 
     @Autowired

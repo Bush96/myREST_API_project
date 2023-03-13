@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MeasurementsRepository extends JpaRepository<Measurement, Integer> {
-//надо додуматься как вытянуть только булевые тру из бд
+
 }

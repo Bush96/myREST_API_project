@@ -42,4 +42,9 @@ public class Sensor {
         return name;
     }
 
+
+    public Sensor(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
